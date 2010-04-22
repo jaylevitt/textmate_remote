@@ -1,0 +1,72 @@
+#!/usr/bin/env perl
+#
+# Updated 2010-04-21 Jay Levitt
+# Originally borrowed from 
+# http://snippets.dzone.com/posts/show/510
+#  and
+# http://groups.google.com/group/comp.unix.shell/msg/77af5d0e339d0006
+#  and
+# http://forum.slicehost.com/comments.php?DiscussionID=1090
+#
+# Add to your Mac's ~/.ssh/config:
+#  RemoteForward 10022 localhost:22
+#
+# TODO: Check for MATE_PORT variable to override port 10022, so 
+# multiple clients can do this simultaneously
+#
+# TODO: Store mount, app, user in Mac environment and pass them via
+# .ssh/environment (or some other way that works on machines with
+# PermitUserEnvironment=No).
+
+use warnings;
+use strict;
+
+use Cwd 'abs_path';
+use Getopt::Long;
+
+# Customize these:
+my $mac_mount = '/Volumes/remote-mounted';
+my $mac_app = "/Applications/TextMate.app";
+my $mac_user = 'jay';
+
+my $debug='';
+my $tunnel='y';
+GetOptions ('debug' => \$debug,
+			'tunnel!' => \$tunnel);
+
+my $mac_ip;
+my $mac_port;
+if ($tunnel) {
+  $mac_ip = "localhost";
+  $mac_port = 10022;
+} else {
+  	my @ssh_from = split(/ /,$ENV{'SSH_CLIENT'});
+	$mac_ip = $ssh_from[0];
+	$mac_port = 22;
+}
+
+my $file = abs_path(${ARGV[0]});
+print "Opening '$file'...\n";
+
+unless (-e $file) {
+	print "create $file? [Yn] ";
+	chomp (my $do_create = <STDIN>);
+	
+	unless (($do_create eq "Y") || ($do_create eq "y") || ($do_create eq "")) {
+		exit;
+	}
+	`touch $file`;
+	
+}
+
+unless (-e $file) {
+	print "Couldn't create $file!\n";
+	exit;
+}
+
+my $command = "ssh ${mac_user}\@${mac_ip} -p ${mac_port} \"open -a ${mac_app} ${mac_mount}/${file}; exit\"";
+if ($debug) {
+	print $command . "\n";
+}
+
+`$command`;
