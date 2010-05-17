@@ -64,7 +64,7 @@ unless (-e $file) {
 	exit;
 }
 
-my $command = "ssh ${mac_user}\@${mac_ip} -p ${mac_port} \"open -a ${mac_app} ${mac_mount}/${file}; exit\"";
+my $command = "ssh ${mac_user}\@${mac_ip} -p ${mac_port} \"open -a ${mac_app} ${mac_mount}${file}; exit\"";
 if ($debug) {
 	print $command . "\n";
 }
