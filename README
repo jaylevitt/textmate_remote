@@ -1,2 +1,3 @@
 TODO: Move mac-* variables into config file
 TODO: Make port number work automagically w/multiple machines
+TODO: Add simple "CR to continue" to support mate_wait 
