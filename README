@@ -1,2 +1,61 @@
-TODO: Move mac-* variables into config file
-TODO: Make port number work automagically w/multiple machines
+textmate_remote provides a "mate" command that lets you, from a remote ssh session, open a file locally in
+TextMate.
+
+PREREQUISITE
+
+You must have the remote drive mounted locally somehow. The easiest way to do this is to download
+MacFusion:
+
+http://www.macfusionapp.org
+
+MacFusion lets you mount any ssh-reachable machine as a filesystem. You'll want to mount the root of the
+remote filesystem (that is, in MacFusion, set "Path" to "/".)  Let's say you have mounted my-server.example.com as /Volumes/my-server.
+
+
+INSTALLATION: ON YOUR MAC
+
+In your ~/.ssh/config file (which you might need to create), add an entry:
+
+Host my-server.example.com
+  RemoteForward 10022 localhost:22
+
+You'll need to specify the "my-server.example.com" name *exactly* as you normally supply it to ssh; if you usually just ssh to "my-server" (letting your domain name be appended by default), the Host entry must also read "my-server".  You can specify multiple names in the Host entry, e.g.:
+
+Host my-server.eastcoast.example.com my-server my-server.eastcoast
+  RemoteForward 10022 localhost:22
+
+(Alternatively, you can just add "-R 10022:localhost:22" when you ssh to your server.)
+
+INSTALLATION: ON YOUR SERVER
+
+Edit the defaults in the "mate" script:
+
+$mac_mount: The full path, on your Mac, of the remote-mounted filesystem
+$mac_app: The full path, on your Mac, to TextMate
+$mac_user: Your Mac username
+
+Then:
+
+sudo cp mate /usr/local/bin
+sudo chmod a+x /usr/local/bin/mate
+sudo ln -s /usr/local/bin/mate /usr/local/bin/mate_wait
+
+USAGE
+
+From your ssh session, just type "mate path/to/file" as you normally would on your Mac.  Magic!  
+
+If you want to use TextMate as your default editor, you'll probably want to use the "mate_wait" version, e.g.:
+
+## ~/.bashrc
+export EDITOR=mate_wait
+
+This script has no way of knowing when you've closed the TextMate window, so you have to press ENTER (in the Terminal) when you're done editing.  It's on the honor system. 
+
+TODO
+
+- Move mac-* variables into config file 
+- Make port number work automagically w/multiple machines
+
+LICENSE
+
+Get it, use it, share it, improve it, but don't blame me.
