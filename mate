@@ -20,6 +20,7 @@
 
 use warnings;
 use strict;
+use English '-no_match_vars';
 
 use Cwd 'abs_path';
 use Getopt::Long;
@@ -29,10 +30,15 @@ my $mac_mount = '/Volumes/remote-mounted';
 my $mac_app = "/Applications/TextMate.app";
 my $mac_user = 'jay';
 
-my $debug='';
-my $tunnel='y';
-GetOptions ('debug' => \$debug,
-			'tunnel!' => \$tunnel);
+my $debug = '';
+my $tunnel = 'y';
+my $wait = '';
+
+GetOptions (
+        'debug' => \$debug,
+        'tunnel!' => \$tunnel,
+        'wait|w' => \$wait
+        );
 
 my $mac_ip;
 my $mac_port;
@@ -70,3 +76,8 @@ if ($debug) {
 }
 
 `$command`;
+
+if ($wait || $PROGRAM_NAME =~ /mate_wait/ ) {
+        print "Press ENTER when done: ";
+        my $waiting = <STDIN>;
+}
